@@ -6,8 +6,8 @@
 //#define DEBUG
 #define VERSION "Version_0.1"
 
-const char* ssid = "MY_SSID";
-const char* password = "***********";
+const char* ssid = "LIVCOM";
+const char* password = "maracujacomamora";
 const char* mqtt_server = "192.168.1.8";
 
 #define CONFIGURATION_TOPIC "sensors/config"
