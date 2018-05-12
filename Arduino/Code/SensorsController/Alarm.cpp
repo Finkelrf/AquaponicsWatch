@@ -8,11 +8,18 @@ Alarm::Alarm() {
    }
 }
 
-void Alarm::repeatTimer(long interval, int repetitions, void (*callback)(void)){
+void Alarm::repeatTimer(long interval, int repetitions, void (*callback)(void), bool addSalt){
+	long salt = 0;
+	if(addSalt){
+		randomSeed(analogRead(A5));
+		salt = random(interval/100);
+		Serial.print("salt: ");
+		Serial.println(salt);
+	}
 	Timer_t timer;
 	timer.lastTime = millis();
 	timer.interval = interval;
-	timer.repetitions = repetitions;
+	timer.repetitions = repetitions+salt;
 	timer.running = true;
 	timer.callback = callback;
 	addTimer(timer);
@@ -30,10 +37,17 @@ void Alarm::oneTimeTimer(long interval, void (*callback)(void)){
 
 };
 
-void Alarm::infiniteTimer(long interval, void (*callback)(void)){
+void Alarm::infiniteTimer(long interval, void (*callback)(void), bool addSalt){
+	long salt = 0;
+	if(addSalt){
+		randomSeed(analogRead(A5));
+		salt = random(interval/100);
+		Serial.print("salt: ");
+		Serial.println(salt);
+	}
 	Timer_t timer;
 	timer.lastTime = millis();
-	timer.interval = interval;
+	timer.interval = interval + salt;
 	timer.repetitions = -1;
 	timer.running = true;
 	timer.callback = callback;
