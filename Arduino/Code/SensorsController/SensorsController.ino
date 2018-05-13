@@ -1,3 +1,42 @@
+#include "Common.h"
+
+Alarm alarm;
+Air air;
+Fishtank fishtank;
+
+SoftwareSerial softSerial(SOFT_SERIAL_RX_PIN,SOFT_SERIAL_TX_PIN);
+Communication com(&softSerial);
+
+void setup(){
+  Serial.begin(9600);
+  Serial.print("Version:");
+  Serial.println(VERSION);
+
+  air.begin();
+
+  alarm.infiniteTimer(AIR_TEMPERATURE_INTERVAL, updateAirTemp, NULL, true, 1000);
+  alarm.infiniteTimer(AIR_HUMIDITY_INTERVAL,updateAirHumidity,NULL, true, 2000);
+  alarm.infiniteTimer(RAIN_SENSOR_INTERVAL,updateAirRainLevel,NULL, true, 3000);
+
+}
+
+void updateAirTemp(void *){
+  com.sendMsg(AIR_TEMP_TOPIC, String(air.readTemp(),DEC));
+}
+
+void updateAirHumidity(void *){
+  com.sendMsg(AIR_HUMIDITY_TOPIC, String(air.readHumidity(),DEC));
+}
+
+void updateAirRainLevel(void *){
+  com.sendMsg(AIR_RAIN_TOPIC, String(air.readRainLevel(),DEC));
+}
+
+void loop(){
+  alarm.checkTimers();
+}
+
+/*
 #include <SoftwareSerial.h>
 #include <Ultrasonic.h>
  
@@ -164,3 +203,4 @@ void loop() {
     Serial.print((char)SoftSerial.read());
   }
 }
+*/

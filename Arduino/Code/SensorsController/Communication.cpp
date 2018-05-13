@@ -11,10 +11,8 @@ Communication::sendMsg(String topic, String msg){
 	softSerial->print(msg);
 	softSerial->print(END_OF_COMMAND_CHAR);
 
-#ifdef DEBUG
 	Serial.print(topic);
 	Serial.print(SEPARATION_CHAR);
 	Serial.print(msg);
 	Serial.print(END_OF_COMMAND_CHAR);
-#endif
 };
