@@ -1,18 +1,18 @@
 #include "Hal.h"
 
+DHT Air::dht = DHT(DHT_PIN, DHT_TYPE);
+
 void Air::begin(){
 	pinMode(RAIN_POWER_PIN,OUTPUT);
-	DHT newDht(DHT_PIN, DHT_TYPE);
-	dht = &newDht;
-	dht->begin();
+	Air::dht.begin();
 };
 
 float Air::readTemp(){
-	return dht->readTemperature();
+	return Air::dht.readTemperature();
 };
 
 float Air::readHumidity(){
-	return dht->readHumidity();
+	return Air::dht.readHumidity();
 };
 
 int Air::readRainLevel(){
@@ -23,3 +23,20 @@ int Air::readRainLevel(){
 	return 1024-rainLevel;
 };
 
+void Fishtank::begin(){
+	OneWire newOneWire(WATER_TEMP_SENSOR); //
+	oneWire = &newOneWire;
+	DallasTemperature sensors(oneWire);
+	tempSensor = &sensors;
+	DeviceAddress sensor1;
+	tempSensor->begin();
+	tempSensor->getAddress(sensor1, 0); 
+  	sensorAddress = &sensor1;
+  	tempSensor->requestTemperatures();
+}
+
+
+float Fishtank::readTemp(){
+  	tempSensor->requestTemperatures();
+	return tempSensor->getTempC(*sensorAddress);
+}

@@ -13,11 +13,18 @@ void setup(){
   Serial.println(VERSION);
 
   air.begin();
+  fishtank.begin();
 
-  alarm.infiniteTimer(AIR_TEMPERATURE_INTERVAL, updateAirTemp, NULL, true, 1000);
+  
+  alarm.infiniteTimer(RAIN_SENSOR_INTERVAL,updateAirRainLevel,NULL, true, 1000);
   alarm.infiniteTimer(AIR_HUMIDITY_INTERVAL,updateAirHumidity,NULL, true, 2000);
-  alarm.infiniteTimer(RAIN_SENSOR_INTERVAL,updateAirRainLevel,NULL, true, 3000);
+  alarm.infiniteTimer(AIR_TEMPERATURE_INTERVAL, updateAirTemp, NULL, true, 3000);
+  alarm.infiniteTimer(FISHTANK_TEMP_INTERVAL,updateFishtankTemp,NULL, true, 4000);
 
+}
+
+void updateFishtankTemp(void *){
+  com.sendMsg(FISHTANK_TEMP_TOPIC,String(fishtank.readTemp(),DEC));
 }
 
 void updateAirTemp(void *){

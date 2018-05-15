@@ -3,7 +3,7 @@
 
 #include "Common.h"
 
-#define DHT_PIN 8
+#define DHT_PIN 2
 #define DHT_TYPE DHT22 
 
 #define RAIN_POWER_PIN 6
@@ -13,7 +13,7 @@
 
 class Air
 {
-	DHT *dht;
+	static DHT dht;
 public:
 	void begin();
 	float readTemp();
@@ -21,12 +21,15 @@ public:
 	int readRainLevel();
 };
 
-class FishTank
+class Fishtank
 {
-	
+	OneWire *oneWire;
+	DallasTemperature *tempSensor;
+	DeviceAddress *sensorAddress;
 public:
 	void begin();
 	float readTemp();
+	void findDevices();
 };
 
 #endif

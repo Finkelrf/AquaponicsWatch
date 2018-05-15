@@ -12,9 +12,10 @@
 #define SOFT_SERIAL_TX_PIN 11
 #define SOFT_SERIAL_BAUD 9600
 
-static const String AIR_TEMP_TOPIC = "aquaponics/air/temperature";
-static const String AIR_HUMIDITY_TOPIC = "aquaponics/air/humidity";
-static const String AIR_RAIN_TOPIC = "aquaponics/air/rain";
+static const String AIR_TEMP_TOPIC = "aquaponics/airtemperature";
+static const String AIR_HUMIDITY_TOPIC = "aquaponics/airhumidity";
+static const String AIR_RAIN_TOPIC = "aquaponics/rain";
+static const String FISHTANK_TEMP_TOPIC = "aquaponics/fishtanktemperature";
 
 class Communication
 {
