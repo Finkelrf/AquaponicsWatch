@@ -16,13 +16,17 @@ static const String AIR_TEMP_TOPIC = "aquaponics/airtemperature";
 static const String AIR_HUMIDITY_TOPIC = "aquaponics/airhumidity";
 static const String AIR_RAIN_TOPIC = "aquaponics/rain";
 static const String FISHTANK_TEMP_TOPIC = "aquaponics/fishtanktemperature";
+static const String FEED_TOPIC = "aquaponics/feed";
 
 class Communication
 {
-	SoftwareSerial *softSerial;
+	static SoftwareSerial softSerial;
+	static char inputBuffer[];
+	static uint8_t bufferCursor;
 public:
-	Communication(SoftwareSerial *ss);
-	sendMsg(String topic, String msg);
+	static void begin();
+	static void sendMsg(String topic, String msg);
+	static void checkForMsg();
 };
 
 
