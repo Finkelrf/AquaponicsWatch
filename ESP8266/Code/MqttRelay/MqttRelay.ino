@@ -58,7 +58,6 @@ void setupMqtt(){
 }
 
 void setup_wifi() {
-  delay(10);
   // We start by connecting to a WiFi network
   #ifdef DEBUG
     Serial.println();
@@ -67,11 +66,32 @@ void setup_wifi() {
   #endif
   WiFi.begin(ssid, password);
 
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    #ifdef DEBUG
-      Serial.println(WiFi.status());
-    #endif
+  int wifiStatus = WiFi.status();
+  bool wifiConnected = false;
+  while (!wifiConnected) {
+   delay(2000);
+   wifiStatus = WiFi.status();
+    switch(wifiStatus){
+      case WL_IDLE_STATUS:
+        Serial.println("wifistatus|idle");
+        break;
+      case WL_NO_SSID_AVAIL:
+        Serial.println("wifistatus|no ssid available");
+        break;
+      case WL_CONNECTED:
+        wifiConnected = true;
+        Serial.println("wifistatus|connected");
+        break;
+      case WL_CONNECT_FAILED:
+        Serial.println("wifistatus|failed");
+        break;
+      case WL_CONNECTION_LOST:
+        Serial.println("wifistatus|connection lost");
+        break;
+      case WL_DISCONNECTED:
+        Serial.println("wifistatus|disconnected");
+        break;
+    }
   }
   #ifdef DEBUG
     Serial.println("");
@@ -83,6 +103,7 @@ void setup_wifi() {
 }
 
 void setup() {
+  delay(1000);
   Serial.begin(9600);
   #ifdef DEBUG
     Serial.println(VERSION);
