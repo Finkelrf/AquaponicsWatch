@@ -11,6 +11,9 @@
 
 #define WATER_TEMP_SENSOR 7
 
+#define FEEDER_PIN 9
+#define FEEDING_TIME 5000
+
 class Air
 {
 	static DHT dht;
@@ -30,6 +33,15 @@ public:
 	void begin();
 	float readTemp();
 	void findDevices();
+};
+
+class Feeder
+{
+	static Servo myservo;
+public:
+	void feed();
+	static void stopFeed();
+
 };
 
 #endif

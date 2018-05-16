@@ -7,12 +7,13 @@
 #include <Time.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <Servo.h>
 #include "Communication.h"
 #include "Alarm.h"
 #include "Hal.h"
 
 #define VERSION "0.2"
-//#define DEBUG
+#define DEBUG
 
 
 

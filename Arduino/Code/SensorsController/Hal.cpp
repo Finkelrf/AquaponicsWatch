@@ -35,8 +35,19 @@ void Fishtank::begin(){
   	tempSensor->requestTemperatures();
 }
 
-
 float Fishtank::readTemp(){
   	tempSensor->requestTemperatures();
 	return tempSensor->getTempC(*sensorAddress);
+}
+
+Servo Feeder::myservo;
+
+void Feeder::feed(){
+	Feeder::myservo.attach(FEEDER_PIN); 
+	Feeder::myservo.write(5);
+	Alarm::oneTimeTimer(FEEDING_TIME, Feeder::stopFeed);
+}
+
+static void Feeder::stopFeed(){
+	Feeder::myservo.detach();
 }
