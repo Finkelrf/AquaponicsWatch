@@ -3,19 +3,6 @@
 Timer_t Alarm::timers[] = {};
 int Alarm::alocatedTimers = 0;
 
-Alarm::Alarm() {
-   int i;
-   for (i = 0; i < MAX_TIMERS; ++i)
-   {
-   	Alarm::timers[i].running = false;
-   }
-}
-
-void hello(int *i){
-	Serial.print("Hello ");
-	Serial.println(*i);
-}
-
 void Alarm::repeatTimer(long interval, int repetitions, void (*callback)(void *), void *data , bool addStartDelay, long startDelay){
 	Timer_t *timer = (Timer_t*)malloc(sizeof(Timer_t));
 	timer->lastTime = millis();

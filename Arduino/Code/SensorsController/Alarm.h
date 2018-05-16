@@ -3,10 +3,11 @@
 
 #include "common.h"
 
-#define AIR_TEMPERATURE_INTERVAL 600000
-#define AIR_HUMIDITY_INTERVAL 600000
-#define FISHTANK_TEMP_INTERVAL 600000
-#define RAIN_SENSOR_INTERVAL 600000
+#define AIR_TEMPERATURE_INTERVAL 60000
+#define AIR_HUMIDITY_INTERVAL 60000
+#define FISHTANK_TEMP_INTERVAL 60000
+#define RAIN_SENSOR_INTERVAL 60000
+#define FEED_INTERVAL 21600000
 
 #define MAX_TIMERS 10
 typedef struct Timer { 
@@ -26,15 +27,11 @@ class Alarm
 	static void addTimer(void *newTimer);
 
 public:
-	Alarm();
-	void repeatTimer(long interval, int numberOfRepetitions, void (*callback)(void *), void *data = NULL, bool addStartDelay = false, long startDelay = -1);
-	void infiniteTimer(long interval, void (*callback)(void *), void *data = NULL, bool addStartDelay = false, long startDelay = -1);
-	void oneTimeTimer(long interval, void (*callback)(void *), void *data = NULL);
+	static void repeatTimer(long interval, int numberOfRepetitions, void (*callback)(void *), void *data = NULL, bool addStartDelay = false, long startDelay = -1);
+	static void infiniteTimer(long interval, void (*callback)(void *), void *data = NULL, bool addStartDelay = false, long startDelay = -1);
+	static void oneTimeTimer(long interval, void (*callback)(void *), void *data = NULL);
 
-	void checkTimers();
-	long lastTime;
-	long interval;
-	long repetitionsLeft;
+	static void checkTimers();
 };
 
 
