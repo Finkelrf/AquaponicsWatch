@@ -22,11 +22,15 @@ class Communication
 {
 	static SoftwareSerial softSerial;
 	static char inputBuffer[];
-	static uint8_t bufferCursor;
+	static uint8_t beginCursor;
+	static uint8_t endCursor;
+	static uint8_t messagesOnBuffer;
+	static bool wifiConnected;
 public:
 	static void begin();
 	static void sendMsg(String topic, String msg);
 	static void checkForMsg();
+	static bool isWifiConnected();
 };
 
 

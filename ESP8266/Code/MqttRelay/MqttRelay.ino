@@ -6,8 +6,8 @@
 //#define DEBUG
 #define VERSION "Version_0.1"
 
-const char* ssid = "MY_SSID";
-const char* password = "MY_PASSWORD";
+const char* ssid = "LIVCOM";
+const char* password = "maracujacomamora";
 const char* mqtt_server = "192.168.1.8";
 
 #define CONFIGURATION_TOPIC "sensors/config"
@@ -17,6 +17,7 @@ WiFiClient espClient;
 PubSubClient client(espClient);
 char msg[MAX_STRING_LENGTH];
 int i = 0;
+int retryCounter = 0;
 
 void callback(char* topic, byte* payload, unsigned int length) {
   #ifdef DEBUG
@@ -58,6 +59,7 @@ void setupMqtt(){
 }
 
 void setup_wifi() {
+  retryCounter = 0;
   // We start by connecting to a WiFi network
   #ifdef DEBUG
     Serial.println();
@@ -69,28 +71,19 @@ void setup_wifi() {
   int wifiStatus = WiFi.status();
   bool wifiConnected = false;
   while (!wifiConnected) {
-   delay(2000);
-   wifiStatus = WiFi.status();
-    switch(wifiStatus){
-      case WL_IDLE_STATUS:
-        Serial.println("wifistatus|idle");
-        break;
-      case WL_NO_SSID_AVAIL:
-        Serial.println("wifistatus|no ssid available");
-        break;
-      case WL_CONNECTED:
-        wifiConnected = true;
-        Serial.println("wifistatus|connected");
-        break;
-      case WL_CONNECT_FAILED:
-        Serial.println("wifistatus|failed");
-        break;
-      case WL_CONNECTION_LOST:
-        Serial.println("wifistatus|connection lost");
-        break;
-      case WL_DISCONNECTED:
-        Serial.println("wifistatus|disconnected");
-        break;
+    retryCounter++;
+    delay(1000);
+    wifiStatus = WiFi.status();
+    Serial.print(wifiStatus);
+    if(wifiStatus == WL_CONNECTED){
+      wifiConnected = true;
+    }
+    if(retryCounter == 20){
+      #ifdef DEBUG
+      Serial.println("Restarting");
+      #endif
+      ESP.eraseConfig();
+      ESP.restart();
     }
   }
   #ifdef DEBUG

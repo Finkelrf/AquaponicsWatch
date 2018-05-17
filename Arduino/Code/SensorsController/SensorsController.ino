@@ -1,46 +1,69 @@
 #include "Common.h"
 
-Alarm alarm;
 Air air;
 Fishtank fishtank;
-
-SoftwareSerial softSerial(SOFT_SERIAL_RX_PIN,SOFT_SERIAL_TX_PIN);
-Communication com(&softSerial);
+Feeder feeder;
 
 void setup(){
+  pinMode(LED_BUILTIN,OUTPUT);
+  digitalWrite(LED_BUILTIN,LOW);
   Serial.begin(9600);
   Serial.print("Version:");
   Serial.println(VERSION);
 
   air.begin();
   fishtank.begin();
+  Communication::begin();
 
+  while(!Communication::isWifiConnected()){
+    Communication::checkForMsg();
+  }
+  digitalWrite(LED_BUILTIN,HIGH);
   
-  alarm.infiniteTimer(RAIN_SENSOR_INTERVAL,updateAirRainLevel,NULL, true, 1000);
-  alarm.infiniteTimer(AIR_HUMIDITY_INTERVAL,updateAirHumidity,NULL, true, 2000);
-  alarm.infiniteTimer(AIR_TEMPERATURE_INTERVAL, updateAirTemp, NULL, true, 3000);
-  alarm.infiniteTimer(FISHTANK_TEMP_INTERVAL,updateFishtankTemp,NULL, true, 4000);
+  Alarm::infiniteTimer(RAIN_SENSOR_INTERVAL,updateAirRainLevel,NULL, true, 1000);
+  Alarm::infiniteTimer(AIR_HUMIDITY_INTERVAL,updateAirHumidity,NULL, true, 2000);
+  Alarm::infiniteTimer(AIR_TEMPERATURE_INTERVAL, updateAirTemp, NULL, true, 3000);
+  Alarm::infiniteTimer(FISHTANK_TEMP_INTERVAL,updateFishtankTemp,NULL, true, 4000);
+  Alarm::infiniteTimer(FEED_INTERVAL,feed,NULL, true, 5000);
 
+}
+
+void feed(void *){
+  feeder.feed();
+  Communication::sendMsg(FEED_TOPIC,"Feeding the fish.");
 }
 
 void updateFishtankTemp(void *){
-  com.sendMsg(FISHTANK_TEMP_TOPIC,String(fishtank.readTemp(),DEC));
+  if(Communication::isWifiConnected())
+    Communication::sendMsg(FISHTANK_TEMP_TOPIC,String(fishtank.readTemp(),DEC));
+  else
+    Alarm::oneTimeTimer(NO_WIFI_RETRY_INTERVAL,updateFishtankTemp);
 }
 
 void updateAirTemp(void *){
-  com.sendMsg(AIR_TEMP_TOPIC, String(air.readTemp(),DEC));
+  if(Communication::isWifiConnected())
+    Communication::sendMsg(AIR_TEMP_TOPIC, String(air.readTemp(),DEC));
+  else
+    Alarm::oneTimeTimer(NO_WIFI_RETRY_INTERVAL,updateAirTemp);
 }
 
 void updateAirHumidity(void *){
-  com.sendMsg(AIR_HUMIDITY_TOPIC, String(air.readHumidity(),DEC));
+  if(Communication::isWifiConnected())
+    Communication::sendMsg(AIR_HUMIDITY_TOPIC, String(air.readHumidity(),DEC));
+  else
+    Alarm::oneTimeTimer(NO_WIFI_RETRY_INTERVAL,updateAirHumidity);
 }
 
 void updateAirRainLevel(void *){
-  com.sendMsg(AIR_RAIN_TOPIC, String(air.readRainLevel(),DEC));
+  if(Communication::isWifiConnected())
+    Communication::sendMsg(AIR_RAIN_TOPIC, String(air.readRainLevel(),DEC));
+  else
+    Alarm::oneTimeTimer(NO_WIFI_RETRY_INTERVAL,updateAirRainLevel);
 }
 
 void loop(){
-  alarm.checkTimers();
+  Alarm::checkTimers();
+  Communication::checkForMsg();
 }
 
 /*
