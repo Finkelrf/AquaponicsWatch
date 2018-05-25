@@ -47,7 +47,7 @@ void Alarm::oneTimeTimer(long interval, void (*callback)(void *), void *data){
 void Alarm::checkTimers(){
 	int i;
 	long now = millis();
-	for (i = 0; i < Alarm::alocatedTimers; ++i)
+	for (i = 0; i < MAX_TIMERS; ++i)
 	{
 		if(Alarm::timers[i].running == true){
 			if(Alarm::timers[i].lastTime + Alarm::timers[i].interval < now){
@@ -64,8 +64,11 @@ void Alarm::checkTimers(){
 					Alarm::timers[i].repetitions--;
 					if(Alarm::timers[i].repetitions <= 0){
 						Alarm::timers[i].running = false;
+						Alarm::alocatedTimers--;
 #ifdef DEBUG
 						Serial.println("Timer stoped");
+						Serial.print("Alocated Timers: ");
+						Serial.println(Alarm::alocatedTimers);
 #endif
 					}
 				}
@@ -95,8 +98,21 @@ void Alarm::addTimer(void *newTimer){
 	Serial.println(t->running);
 #endif
 	
-	Alarm::timers[Alarm::alocatedTimers++] = *t;
+	// find free timer 
+	int i;
+	for (i = 0;i < MAX_TIMERS; i++)
+	{
+		if(!Alarm::timers[i].running)
+		{
+			Alarm::timers[i] = *t;
+			Alarm::alocatedTimers++;
+			break;
+		}
+	}
+	
 #ifdef DEBUG
 	Serial.println("Timer added!");
+	Serial.print("Alocated Timers: ");
+	Serial.println(Alarm::alocatedTimers);
 #endif
 }
