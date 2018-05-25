@@ -17,6 +17,8 @@ static const String AIR_HUMIDITY_TOPIC = "aquaponics/airhumidity";
 static const String AIR_RAIN_TOPIC = "aquaponics/rain";
 static const String FISHTANK_TEMP_TOPIC = "aquaponics/fishtanktemperature";
 static const String FEED_TOPIC = "aquaponics/feed";
+static const String FISHTANK_WATER_LEVEL_TOPIC = "aquaponics/fishtankwaterlevel";
+static const String HEATER_STATUS_TOPIC = "aquaponics/fishtankheaterstatus";
 
 class Communication
 {
@@ -26,6 +28,7 @@ class Communication
 	static uint8_t endCursor;
 	static uint8_t messagesOnBuffer;
 	static bool wifiConnected;
+
 public:
 	static void begin();
 	static void sendMsg(String topic, String msg);

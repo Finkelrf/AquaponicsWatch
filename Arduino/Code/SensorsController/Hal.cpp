@@ -24,7 +24,7 @@ int Air::readRainLevel(){
 };
 
 void Fishtank::begin(){
-	OneWire newOneWire(WATER_TEMP_SENSOR); //
+	OneWire newOneWire(WATER_TEMP_SENSOR); 
 	oneWire = &newOneWire;
 	DallasTemperature sensors(oneWire);
 	tempSensor = &sensors;
@@ -50,4 +50,41 @@ void Feeder::feed(){
 
 static void Feeder::stopFeed(){
 	Feeder::myservo.detach();
+}
+
+void Heater::begin(){
+	pinMode(HEATER_PIN,OUTPUT);
+}
+
+void Heater::turnOn(){
+	digitalWrite(HEATER_PIN,HIGH);
+}
+void Heater::turnOff(){
+	digitalWrite(HEATER_PIN,LOW);
+}
+
+// return true if heater is on;
+bool Heater::heaterControl(float temperature){
+	if(temperature>=HEATER_TEMPERATURE_THRESHOLD){
+#ifdef DEBUG
+		Serial.println("Turning heater off");
+#endif
+		Heater::turnOff();
+		return false;
+	}else{
+#ifdef DEBUG
+		Serial.println("Turning heater on");
+#endif
+		Heater::turnOn();
+		return true;
+	}
+}
+
+double WaterLevel::read(){
+	int sensorValue = analogRead(WATER_LEVEL_PIN);
+	// map it to degrees
+	int degrees = map(sensorValue, WATER_LEVEL_CALIBRATION_MIN, WATER_LEVEL_CALIBRATION_MAX, 0, 90);
+	double rad = double(degrees) * 1000 / 57296;
+	double waterLvl = sin(rad)*WATER_LEVEL_MAX_DEPTH;
+	return waterLvl;
 }

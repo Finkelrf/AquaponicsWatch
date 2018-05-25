@@ -3,37 +3,67 @@
 Air air;
 Fishtank fishtank;
 Feeder feeder;
+Heater heater;
+WaterLevel waterLevel;
 
 void setup(){
   pinMode(LED_BUILTIN,OUTPUT);
   digitalWrite(LED_BUILTIN,LOW);
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.print("Version:");
   Serial.println(VERSION);
 
   air.begin();
   fishtank.begin();
+  heater.begin();
   Communication::begin();
 
   while(!Communication::isWifiConnected()){
     Communication::checkForMsg();
   }
+
   digitalWrite(LED_BUILTIN,HIGH);
   
   Alarm::infiniteTimer(RAIN_SENSOR_INTERVAL,updateAirRainLevel,NULL, true, 1000);
   Alarm::infiniteTimer(AIR_HUMIDITY_INTERVAL,updateAirHumidity,NULL, true, 2000);
   Alarm::infiniteTimer(AIR_TEMPERATURE_INTERVAL, updateAirTemp, NULL, true, 3000);
   Alarm::infiniteTimer(FISHTANK_TEMP_INTERVAL,updateFishtankTemp,NULL, true, 4000);
-  Alarm::infiniteTimer(FEED_INTERVAL,feed,NULL, true, 5000);
+  Alarm::infiniteTimer(FISHTANK_WATER_LEVEL_INTERVAL,updateWaterLvl,NULL, true, 5000);
+  //Alarm::infiniteTimer(FEED_INTERVAL,feed,NULL, true, 5000);
+  Alarm::infiniteTimer(HEAT_CONTROL_INTERVAL,runHeaterControl); 
 
+}
+
+void updateWaterLvl(){
+#ifdef DEBUG
+  Serial.println("Executando updateWaterLvl");
+  Serial.println(waterLevel.read());
+#endif
+  if(Communication::isWifiConnected())
+    Communication::sendMsg(FISHTANK_WATER_LEVEL_TOPIC,String(waterLevel.read(),DEC));
+  else
+    Alarm::oneTimeTimer(NO_WIFI_RETRY_INTERVAL,updateWaterLvl);
+  
+}
+
+void runHeaterControl(void *){
+  bool isHeaterOn = heater.heaterControl(fishtank.readTemp());
+  if(isHeaterOn){
+    Communication::sendMsg(HEATER_STATUS_TOPIC,"1");
+  }else{
+    Communication::sendMsg(HEATER_STATUS_TOPIC,"0");
+  }
 }
 
 void feed(void *){
   feeder.feed();
-  Communication::sendMsg(FEED_TOPIC,"Feeding the fish.");
+  Communication::sendMsg(FEED_TOPIC,"1");
 }
 
 void updateFishtankTemp(void *){
+#ifdef DEBUG
+  Serial.println("Executando updateFishtankTemp");
+#endif
   if(Communication::isWifiConnected())
     Communication::sendMsg(FISHTANK_TEMP_TOPIC,String(fishtank.readTemp(),DEC));
   else
@@ -41,6 +71,9 @@ void updateFishtankTemp(void *){
 }
 
 void updateAirTemp(void *){
+#ifdef DEBUG
+  Serial.println("Executando updateAirTemp");
+#endif
   if(Communication::isWifiConnected())
     Communication::sendMsg(AIR_TEMP_TOPIC, String(air.readTemp(),DEC));
   else
@@ -48,6 +81,9 @@ void updateAirTemp(void *){
 }
 
 void updateAirHumidity(void *){
+#ifdef DEBUG
+  Serial.println("Executando updateAirHumidity");
+#endif
   if(Communication::isWifiConnected())
     Communication::sendMsg(AIR_HUMIDITY_TOPIC, String(air.readHumidity(),DEC));
   else
@@ -55,6 +91,9 @@ void updateAirHumidity(void *){
 }
 
 void updateAirRainLevel(void *){
+#ifdef DEBUG
+  Serial.println("Executando updateAirRainLevel");
+#endif
   if(Communication::isWifiConnected())
     Communication::sendMsg(AIR_RAIN_TOPIC, String(air.readRainLevel(),DEC));
   else

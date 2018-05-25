@@ -12,8 +12,8 @@
 #include "Alarm.h"
 #include "Hal.h"
 
-#define VERSION "0.2"
-#define DEBUG
+#define VERSION "0.4"
+//#define DEBUG
 
 
 

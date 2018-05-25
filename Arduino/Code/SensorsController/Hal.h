@@ -14,6 +14,14 @@
 #define FEEDER_PIN 9
 #define FEEDING_TIME 5000
 
+#define HEATER_PIN 5
+#define HEATER_TEMPERATURE_THRESHOLD 18.0f
+
+#define WATER_LEVEL_PIN A1
+#define WATER_LEVEL_MAX_DEPTH 22 //cm
+#define WATER_LEVEL_CALIBRATION_MIN 363
+#define WATER_LEVEL_CALIBRATION_MAX 747
+
 class Air
 {
 	static DHT dht;
@@ -41,7 +49,21 @@ class Feeder
 public:
 	void feed();
 	static void stopFeed();
+};
 
+class Heater
+{
+public:
+	void begin();
+	void turnOn();
+	void turnOff();
+	bool heaterControl(float temperature);
+};
+
+class WaterLevel
+{
+public:
+	double read();
 };
 
 #endif
