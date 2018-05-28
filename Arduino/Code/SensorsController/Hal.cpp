@@ -85,6 +85,6 @@ double WaterLevel::read(){
 	// map it to degrees
 	int degrees = map(sensorValue, WATER_LEVEL_CALIBRATION_MIN, WATER_LEVEL_CALIBRATION_MAX, 0, 90);
 	double rad = double(degrees) * 1000 / 57296;
-	double waterLvl = sin(rad)*WATER_LEVEL_MAX_DEPTH;
+	double waterLvl = WATER_LEVEL_FISHTANK_HEIGHT - sin(rad)*WATER_LEVEL_MAX_DEPTH;
 	return waterLvl;
 }

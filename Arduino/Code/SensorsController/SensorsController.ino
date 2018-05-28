@@ -6,6 +6,8 @@ Feeder feeder;
 Heater heater;
 WaterLevel waterLevel;
 
+char msgBuffer[8];
+
 void setup(){
   pinMode(LED_BUILTIN,OUTPUT);
   digitalWrite(LED_BUILTIN,LOW);
@@ -39,10 +41,16 @@ void updateWaterLvl(){
   Serial.println("Executando updateWaterLvl");
   Serial.println(waterLevel.read());
 #endif
-  if(Communication::isWifiConnected())
-    Communication::sendMsg(FISHTANK_WATER_LEVEL_TOPIC,String(waterLevel.read(),DEC));
-  else
+  if(Communication::isWifiConnected()){
+    dtostrf(waterLevel.read(), 6, 2, msgBuffer);
+    Communication::sendMsg(FISHTANK_WATER_LEVEL_TOPIC,msgBuffer);
+  }
+  else{
+    #ifdef DEBUG
+      Serial.println("No Wifi, re-scheduling");
+    #endif
     Alarm::oneTimeTimer(NO_WIFI_RETRY_INTERVAL,updateWaterLvl);
+  }
   
 }
 
@@ -64,40 +72,51 @@ void updateFishtankTemp(void *){
 #ifdef DEBUG
   Serial.println("Executando updateFishtankTemp");
 #endif
-  if(Communication::isWifiConnected())
-    Communication::sendMsg(FISHTANK_TEMP_TOPIC,String(fishtank.readTemp(),DEC));
-  else
+  if(Communication::isWifiConnected()){
+    dtostrf(fishtank.readTemp(), 6, 2, msgBuffer);
+    Communication::sendMsg(FISHTANK_TEMP_TOPIC,msgBuffer);
+  }else{
     Alarm::oneTimeTimer(NO_WIFI_RETRY_INTERVAL,updateFishtankTemp);
+  }
 }
 
 void updateAirTemp(void *){
 #ifdef DEBUG
   Serial.println("Executando updateAirTemp");
 #endif
-  if(Communication::isWifiConnected())
-    Communication::sendMsg(AIR_TEMP_TOPIC, String(air.readTemp(),DEC));
-  else
+  if(Communication::isWifiConnected()){
+    dtostrf(air.readTemp(), 6, 2, msgBuffer);
+    Communication::sendMsg(AIR_TEMP_TOPIC,msgBuffer);
+  }
+  else{
     Alarm::oneTimeTimer(NO_WIFI_RETRY_INTERVAL,updateAirTemp);
+  }
 }
 
 void updateAirHumidity(void *){
 #ifdef DEBUG
   Serial.println("Executando updateAirHumidity");
 #endif
-  if(Communication::isWifiConnected())
-    Communication::sendMsg(AIR_HUMIDITY_TOPIC, String(air.readHumidity(),DEC));
-  else
+  if(Communication::isWifiConnected()){
+    dtostrf(air.readHumidity(), 6, 2, msgBuffer);
+    Communication::sendMsg(AIR_HUMIDITY_TOPIC, msgBuffer);
+  }
+  else{
     Alarm::oneTimeTimer(NO_WIFI_RETRY_INTERVAL,updateAirHumidity);
+  }
 }
 
 void updateAirRainLevel(void *){
 #ifdef DEBUG
   Serial.println("Executando updateAirRainLevel");
 #endif
-  if(Communication::isWifiConnected())
-    Communication::sendMsg(AIR_RAIN_TOPIC, String(air.readRainLevel(),DEC));
-  else
+  if(Communication::isWifiConnected()){
+    dtostrf(air.readRainLevel(), 6, 2, msgBuffer);
+    Communication::sendMsg(AIR_RAIN_TOPIC, msgBuffer);
+  }
+  else{
     Alarm::oneTimeTimer(NO_WIFI_RETRY_INTERVAL,updateAirRainLevel);
+  }
 }
 
 void loop(){

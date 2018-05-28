@@ -11,7 +11,7 @@ void Communication::begin(){
 	Communication::softSerial.begin(SOFT_SERIAL_BAUD);
 }
 
-void Communication::sendMsg(String topic, String msg){
+void Communication::sendMsg(char *topic, char *msg){
 	Communication::softSerial.print(topic);
 	Communication::softSerial.print(SEPARATION_CHAR);
 	Communication::softSerial.print(msg);
